@@ -1,0 +1,4 @@
+griffon.plugins.jdbi
+griffon.plugins.jdbi.exceptions
+griffon.transform
+org.codehaus.griffon.runtime.jdbi
