@@ -1,0 +1,13 @@
+
+:link_griffon_datasource_plugin: link:http://griffon-plugins.github.io/griffon-datasource-plugin[griffon-datasource-plugin, window="_blank"]
+:link_jdbi: link:http://jdbi.org/[JDBI, window="_blank"].
+:link_dbi: link:http://jdbi.org/apidocs/org/skife/jdbi/v2/DBI.html[DBI, window="_blank"].
+
+:api_jdbi_handler: link:api/griffon/plugins/jdbi/JdbiHandler.html[JdbiHandler, window="_blank"]
+:api_jdbi_callback: link:api/griffon/plugins/jdbi/JdbiCallback.html[JdbiCallback, window="_blank"]
+:api_jdbi_aware: link:api/griffon/transform/JdbiAware.html[@JdbiAware, window="_blank"]
+:api_jdbi_bootstrap: link:api/griffon/plugins/jdbi/JdbiBootstrap.html[JdbiBootstrap, window="_blank"]
+
+:path_griffon_jdbi_core: {rootdir}/subprojects/griffon-jdbi-core
+:path_griffon_jdbi_groovy_compile: {rootdir}/subprojects/griffon-jdbi-groovy-compile
+

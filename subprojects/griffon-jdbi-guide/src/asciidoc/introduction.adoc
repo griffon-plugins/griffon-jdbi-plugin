@@ -1,0 +1,7 @@
+
+[[_introduction]]
+= Introduction
+
+The Jdbi plugin enables lightweight access to datasources using {link_jdbi}.
+This plugin does NOT provide domain classes nor dynamic finders like GORM does.
+
