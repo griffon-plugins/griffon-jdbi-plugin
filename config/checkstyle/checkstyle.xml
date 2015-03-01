@@ -53,7 +53,7 @@
             <property name="format" value="^(\$)?[a-z]?([a-zA-Z0-9_]*)*$"/>
         </module>
         <module name="MethodTypeParameterName">
-            <property name="format" value="^[A-Z]+([A-Z_]*)*$"/>
+            <property name="format" value="^[A-Z]+([A-Za-z_]*)*$"/>
         </module>
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>

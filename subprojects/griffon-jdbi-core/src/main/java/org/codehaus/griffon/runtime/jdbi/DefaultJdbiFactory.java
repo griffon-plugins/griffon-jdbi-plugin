@@ -16,12 +16,15 @@
 package org.codehaus.griffon.runtime.jdbi;
 
 import griffon.core.GriffonApplication;
+import griffon.core.env.Metadata;
 import griffon.core.injection.Injector;
 import griffon.plugins.datasource.DataSourceFactory;
 import griffon.plugins.datasource.DataSourceStorage;
 import griffon.plugins.jdbi.JdbiBootstrap;
 import griffon.plugins.jdbi.JdbiFactory;
+import griffon.plugins.monitor.MBeanManager;
 import org.codehaus.griffon.runtime.core.storage.AbstractObjectFactory;
+import org.codehaus.griffon.runtime.jmx.DBIMonitor;
 import org.skife.jdbi.v2.DBI;
 
 import javax.annotation.Nonnull;
@@ -31,6 +34,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Set;
 
+import static griffon.util.ConfigUtils.getConfigValueAsBoolean;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
@@ -46,6 +50,12 @@ public class DefaultJdbiFactory extends AbstractObjectFactory<DBI> implements Jd
 
     @Inject
     private Injector injector;
+
+    @Inject
+    private MBeanManager mbeanManager;
+
+    @Inject
+    private Metadata metadata;
 
     @Inject
     public DefaultJdbiFactory(@Nonnull @Named("datasource") griffon.core.Configuration configuration, @Nonnull GriffonApplication application) {
@@ -83,6 +93,11 @@ public class DefaultJdbiFactory extends AbstractObjectFactory<DBI> implements Jd
         event("JdbiConnectStart", asList(name, config));
         DBI dbi = createDBI(name);
 
+        if (getConfigValueAsBoolean(config, "jmx", true)) {
+            dbi = new JMXAwareDBI(getDataSource(name), dbi);
+            registerMBeans(name, (JMXAwareDBI) dbi);
+        }
+
         for (Object o : injector.getInstances(JdbiBootstrap.class)) {
             ((JdbiBootstrap) o).init(name, dbi);
         }
@@ -103,13 +118,24 @@ public class DefaultJdbiFactory extends AbstractObjectFactory<DBI> implements Jd
 
         closeDataSource(name);
 
+        if (getConfigValueAsBoolean(config, "jmx", true)) {
+            ((JMXAwareDBI) instance).disposeMBeans();
+        }
+
         event("JdbiDisconnectEnd", asList(name, config));
+    }
+
+    private void registerMBeans(@Nonnull String name, @Nonnull JMXAwareDBI dbi) {
+        RecordingDBI recordingIDBI = (RecordingDBI) dbi.getDelegate();
+        DBIMonitor dbiMonitor = new DBIMonitor(metadata, recordingIDBI, name);
+        dbi.addObjectName(mbeanManager.registerMBean(dbiMonitor, false).getCanonicalName());
     }
 
     @Nonnull
     @SuppressWarnings("ConstantConditions")
     protected DBI createDBI(@Nonnull String dataSourceName) {
-        return new DBI(getDataSource(dataSourceName));
+        DataSource dataSource = getDataSource(dataSourceName);
+        return new RecordingDBI(dataSource, new DBI(dataSource));
     }
 
     protected void closeDataSource(@Nonnull String dataSourceName) {

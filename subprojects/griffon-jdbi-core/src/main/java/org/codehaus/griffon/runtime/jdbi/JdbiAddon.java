@@ -16,11 +16,15 @@
 package org.codehaus.griffon.runtime.jdbi;
 
 import griffon.core.GriffonApplication;
+import griffon.core.env.Metadata;
 import griffon.inject.DependsOn;
 import griffon.plugins.jdbi.JdbiCallback;
 import griffon.plugins.jdbi.JdbiFactory;
 import griffon.plugins.jdbi.JdbiHandler;
+import griffon.plugins.jdbi.JdbiStorage;
+import griffon.plugins.monitor.MBeanManager;
 import org.codehaus.griffon.runtime.core.addon.AbstractGriffonAddon;
+import org.codehaus.griffon.runtime.jmx.JdbiStorageMonitor;
 import org.skife.jdbi.v2.DBI;
 
 import javax.annotation.Nonnull;
@@ -41,6 +45,20 @@ public class JdbiAddon extends AbstractGriffonAddon {
 
     @Inject
     private JdbiFactory jdbiFactory;
+
+    @Inject
+    private JdbiStorage jdbiStorage;
+
+    @Inject
+    private MBeanManager mbeanManager;
+
+    @Inject
+    private Metadata metadata;
+
+    @Override
+    public void init(@Nonnull GriffonApplication application) {
+        mbeanManager.registerMBean(new JdbiStorageMonitor(metadata, jdbiStorage));
+    }
 
     public void onStartupStart(@Nonnull GriffonApplication application) {
         for (String dataSourceName : jdbiFactory.getDatasourceNames()) {

@@ -39,27 +39,27 @@ public interface JdbiAwareConstants extends BaseConstants {
     String JDBI_HANDLER_PROPERTY = "jdbiHandler";
     String JDBI_HANDLER_FIELD_NAME = "this$" + JDBI_HANDLER_PROPERTY;
 
-    String METHOD_WITH_SQL = "withJdbi";
-    String METHOD_CLOSE_SQL = "closeJdbi";
+    String METHOD_WITH_JDBI = "withJdbi";
+    String METHOD_CLOSE_JDBI = "closeJdbi";
     String DATASOURCE_NAME = "datasourceName";
     String CALLBACK = "callback";
 
     MethodDescriptor[] METHODS = new MethodDescriptor[]{
         method(
             type(VOID),
-            METHOD_CLOSE_SQL
+            METHOD_CLOSE_JDBI
         ),
         method(
             type(VOID),
-            METHOD_CLOSE_SQL,
-            args(annotatedType(types(type(JAVAX_ANNOTATION_NULLABLE)), JAVA_LANG_STRING))
+            METHOD_CLOSE_JDBI,
+            args(annotatedType(types(type(JAVAX_ANNOTATION_NONNULL)), JAVA_LANG_STRING))
         ),
 
         annotatedMethod(
             annotations(JAVAX_ANNOTATION_NONNULL),
             type(R),
             typeParams(R),
-            METHOD_WITH_SQL,
+            METHOD_WITH_JDBI,
             args(annotatedType(annotations(JAVAX_ANNOTATION_NONNULL), JDBI_CALLBACK_TYPE, R)),
             throwing(type(RUNTIME_JDBI_EXCEPTION_TYPE))
         ),
@@ -67,7 +67,7 @@ public interface JdbiAwareConstants extends BaseConstants {
             types(type(JAVAX_ANNOTATION_NONNULL)),
             type(R),
             typeParams(R),
-            METHOD_WITH_SQL,
+            METHOD_WITH_JDBI,
             args(
                 annotatedType(annotations(JAVAX_ANNOTATION_NONNULL), JAVA_LANG_STRING),
                 annotatedType(annotations(JAVAX_ANNOTATION_NONNULL), JDBI_CALLBACK_TYPE, R)),

@@ -83,7 +83,7 @@ public class ApplicationModule extends AbstractModule {
 
 == Example
 
-The following is a trivial usage of the `{api_jdbi_handler}` inside a service
+The following is a trivial usage of the `{api_jdbi_handler}` inside a Java service
 
 [source,java,options="nowrap"]
 .com.acme.SampleService.java
@@ -117,6 +117,34 @@ public class SampleService {
 }
 ----
 
+Here's the Groovy version of it
+
+[source,groovy,options="nowrap"]
+.com.acme.SampleService.groovy
+----
+package com.acme
+
+import griffon.core.artifact.GriffonService
+import griffon.metadata.ArtifactProviderFor
+
+import griffon.plugins.jdbi.JdbiHandler
+import org.skife.jdbi.v2.DBI
+
+import javax.inject.Inject
+
+@ArtifactProviderFor(GriffonService)
+class SampleService {
+    @Inject
+    private JdbiHandler jdbiHandler
+
+    String getPersonName(final int id) {
+         jdbiHandler.withJdbi { String datasourceName, DBI dbi ->
+             dbi.open(PersonDAO)?.findById(id)?.name
+         }
+    }
+}
+----
+
 == Events
 
 The following events will be triggered by `{api_jdbi_handler}`
@@ -131,7 +159,29 @@ NOTE: DataSource events may be triggered during connection and disconnection fro
 == AST Transformation
 
 You can apply the `{api_jdbi_aware}` AST transformation on any class. This injects the behavior of `{api_jdbi_handler}`
-into said class.
+into said class. The previous Groovy service example can be rewritten as follows
+
+[source,groovy,options="nowrap"]
+.com.acme.SampleService.groovy
+----
+package com.acme
+
+import griffon.core.artifact.GriffonService
+import griffon.metadata.ArtifactProviderFor
+import griffon.transform.JdbiAware
+
+import org.skife.jdbi.v2.DBI
+
+@JdbiAware
+@ArtifactProviderFor(GriffonService)
+class SampleService {
+    String getPersonName(final int id) {
+         withJdbi { String datasourceName, DBI dbi ->
+             dbi.open(PersonDAO)?.findById(id)?.name
+         }
+    }
+}
+----
 
 == DSL Descriptors
 
