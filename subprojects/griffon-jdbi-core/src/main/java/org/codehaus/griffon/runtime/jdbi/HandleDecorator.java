@@ -20,15 +20,19 @@ import org.skife.jdbi.v2.Call;
 import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.PreparedBatch;
 import org.skife.jdbi.v2.Query;
+import org.skife.jdbi.v2.ResultColumnMapperFactory;
 import org.skife.jdbi.v2.ResultSetMapperFactory;
 import org.skife.jdbi.v2.Script;
+import org.skife.jdbi.v2.SqlObjectContext;
 import org.skife.jdbi.v2.TimingCollector;
 import org.skife.jdbi.v2.TransactionCallback;
+import org.skife.jdbi.v2.TransactionConsumer;
 import org.skife.jdbi.v2.TransactionIsolationLevel;
 import org.skife.jdbi.v2.Update;
 import org.skife.jdbi.v2.exceptions.TransactionFailedException;
 import org.skife.jdbi.v2.tweak.ArgumentFactory;
 import org.skife.jdbi.v2.tweak.ContainerFactory;
+import org.skife.jdbi.v2.tweak.ResultColumnMapper;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import org.skife.jdbi.v2.tweak.SQLLog;
 import org.skife.jdbi.v2.tweak.StatementBuilder;
@@ -66,6 +70,11 @@ public class HandleDecorator implements Handle {
     @Override
     public void close() {
         delegate.close();
+    }
+
+    @Override
+    public boolean isClosed() {
+        return delegate.isClosed();
     }
 
     @Override
@@ -139,8 +148,18 @@ public class HandleDecorator implements Handle {
     }
 
     @Override
+    public void useTransaction(TransactionConsumer callback) throws TransactionFailedException {
+        delegate.useTransaction(callback);
+    }
+
+    @Override
     public <ReturnType> ReturnType inTransaction(TransactionIsolationLevel level, TransactionCallback<ReturnType> callback) throws TransactionFailedException {
         return delegate.inTransaction(level, callback);
+    }
+
+    @Override
+    public void useTransaction(TransactionIsolationLevel level, TransactionConsumer callback) throws TransactionFailedException {
+        delegate.useTransaction(level, callback);
     }
 
     @Override
@@ -204,6 +223,16 @@ public class HandleDecorator implements Handle {
     }
 
     @Override
+    public void registerColumnMapper(ResultColumnMapper mapper) {
+        delegate.registerColumnMapper(mapper);
+    }
+
+    @Override
+    public void registerColumnMapper(ResultColumnMapperFactory factory) {
+        delegate.registerColumnMapper(factory);
+    }
+
+    @Override
     public <SqlObjectType> SqlObjectType attach(Class<SqlObjectType> sqlObjectType) {
         return delegate.attach(sqlObjectType);
     }
@@ -231,5 +260,15 @@ public class HandleDecorator implements Handle {
     @Override
     public void registerContainerFactory(ContainerFactory<?> factory) {
         delegate.registerContainerFactory(factory);
+    }
+
+    @Override
+    public void setSqlObjectContext(SqlObjectContext context) {
+        delegate.setSqlObjectContext(context);
+    }
+
+    @Override
+    public SqlObjectContext getSqlObjectContext() {
+        return delegate.getSqlObjectContext();
     }
 }
