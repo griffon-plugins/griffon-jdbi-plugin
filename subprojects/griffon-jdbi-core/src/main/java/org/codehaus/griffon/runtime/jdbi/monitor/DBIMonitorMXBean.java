@@ -15,19 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-dependencies {
-    api project(':griffon-jdbi-core')
-    api "org.codehaus.griffon:griffon-groovy-compile:${griffonVersion}"
-    api "org.codehaus.griffon:griffon-beans-compile:${griffonVersion}"
-    api(config.dependencies.gav('gipsy')) {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
+package org.codehaus.griffon.runtime.jdbi.monitor;
 
-    annotationProcessor "org.codehaus.griffon:griffon-core-compile:${griffonVersion}"
-}
-
-jar {
-    manifest {
-        attributes('Automatic-Module-Name': project.group + '.jdbi.groovy.compile')
-    }
+/**
+ * @author Andres Almiray
+ * @since 1.1.0
+ */
+public interface DBIMonitorMXBean {
+    int getHandleCount();
 }

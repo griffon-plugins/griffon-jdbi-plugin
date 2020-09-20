@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,16 +17,24 @@
  */
 package griffon.plugins.jdbi
 
+import griffon.annotations.inject.BindTo
 import griffon.core.GriffonApplication
-import griffon.core.RunnableWithArgs
-import griffon.core.test.GriffonUnitRule
-import griffon.inject.BindTo
+import griffon.plugins.datasource.events.DataSourceConnectEndEvent
+import griffon.plugins.datasource.events.DataSourceConnectStartEvent
+import griffon.plugins.datasource.events.DataSourceDisconnectEndEvent
+import griffon.plugins.datasource.events.DataSourceDisconnectStartEvent
+import griffon.plugins.jdbi.events.JdbiConnectEndEvent
+import griffon.plugins.jdbi.events.JdbiConnectStartEvent
+import griffon.plugins.jdbi.events.JdbiDisconnectEndEvent
+import griffon.plugins.jdbi.events.JdbiDisconnectStartEvent
 import griffon.plugins.jdbi.exceptions.RuntimeJdbiException
+import griffon.test.core.GriffonUnitRule
 import org.junit.Rule
 import org.skife.jdbi.v2.DBI
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import javax.application.event.EventHandler
 import javax.inject.Inject
 
 @Unroll
@@ -45,17 +55,13 @@ class JdbiSpec extends Specification {
     void 'Open and close default jdbi'() {
         given:
         List eventNames = [
-            'JdbiConnectStart', 'DataSourceConnectStart',
-            'DataSourceConnectEnd', 'JdbiConnectEnd',
-            'JdbiDisconnectStart', 'DataSourceDisconnectStart',
-            'DataSourceDisconnectEnd', 'JdbiDisconnectEnd'
+            'JdbiConnectStartEvent', 'DataSourceConnectStartEvent',
+            'DataSourceConnectEndEvent', 'JdbiConnectEndEvent',
+            'JdbiDisconnectStartEvent', 'DataSourceDisconnectStartEvent',
+            'DataSourceDisconnectEndEvent', 'JdbiDisconnectEndEvent'
         ]
-        List events = []
-        eventNames.each { name ->
-            application.eventRouter.addEventListener(name, { Object... args ->
-                events << [name: name, args: args]
-            } as RunnableWithArgs)
-        }
+        TestEventHandler testEventHandler = new TestEventHandler()
+        application.eventRouter.subscribe(testEventHandler)
 
         when:
         jdbiHandler.withJdbi { String datasourceName, DBI dbi ->
@@ -66,8 +72,8 @@ class JdbiSpec extends Specification {
         jdbiHandler.closeJdbi()
 
         then:
-        events.size() == 8
-        events.name == eventNames
+        testEventHandler.events.size() == 8
+        testEventHandler.events == eventNames
     }
 
     void 'Connect to default DBI'() {
@@ -169,4 +175,48 @@ class JdbiSpec extends Specification {
 
     @BindTo(JdbiBootstrap)
     private TestJdbiBootstrap bootstrap = new TestJdbiBootstrap()
+
+    private class TestEventHandler {
+        List<String> events = []
+
+        @EventHandler
+        void handleDataSourceConnectStartEvent(DataSourceConnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceConnectEndEvent(DataSourceConnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceDisconnectStartEvent(DataSourceDisconnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceDisconnectEndEvent(DataSourceDisconnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleJdbiConnectStartEvent(JdbiConnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleJdbiConnectEndEvent(JdbiConnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleJdbiDisconnectStartEvent(JdbiDisconnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleJdbiDisconnectEndEvent(JdbiDisconnectEndEvent event) {
+            events << event.class.simpleName
+        }
+    }
 }

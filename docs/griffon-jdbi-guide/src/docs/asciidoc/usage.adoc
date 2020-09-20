@@ -27,7 +27,7 @@ with JDK8+ or closures if running Groovy.
 [source,java,options="nowrap"]
 .griffon.plugins.jdbi.JdbiCallback.java
 ----
-include::{path_griffon_jdbi_core}/src/main/java/griffon/plugins/jdbi/JdbiCallback.java[lines=25..-1]
+include::{path_griffon_jdbi_core}/src/main/java/griffon/plugins/jdbi/JdbiCallback.java[lines=26..-1]
 ----
 
 === Bootstrap
@@ -91,16 +91,16 @@ The following is a trivial usage of the `{api_jdbi_handler}` inside a Java servi
 package com.acme;
 
 import griffon.core.artifact.GriffonService;
-import griffon.metadata.ArtifactProviderFor;
 import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonService;
 
 import griffon.plugins.jdbi.JdbiHandler;
 import griffon.plugins.jdbi.JdbiCallback;
 import org.skife.jdbi.v2.DBI;
+import org.kordamp.jipsy.ServiceProviderFor;
 
 import javax.inject.Inject;
 
-@ArtifactProviderFor(GriffonService.class)
+@ServiceProviderFor(GriffonService.class)
 public class SampleService {
     @Inject
     private JdbiHandler jdbiHandler
@@ -125,14 +125,14 @@ Here's the Groovy version of it
 package com.acme
 
 import griffon.core.artifact.GriffonService
-import griffon.metadata.ArtifactProviderFor
 
 import griffon.plugins.jdbi.JdbiHandler
 import org.skife.jdbi.v2.DBI
+import org.kordamp.jipsy.ServiceProviderFor
 
 import javax.inject.Inject
 
-@ArtifactProviderFor(GriffonService)
+@ServiceProviderFor(GriffonService)
 class SampleService {
     @Inject
     private JdbiHandler jdbiHandler
@@ -149,10 +149,10 @@ class SampleService {
 
 The following events will be triggered by `{api_jdbi_handler}`
 
-JdbiConnectStart(String datasourceName, Map<String, Object> config):: Triggered before connecting to the datasource.
-JdbiConnectEnd(String datasourceName, Map<String, Object> config, DBI dbi):: Triggered after connecting to the datasource.
-JdbiDisconnectStart(String datasourceName, Map<String, Object> config, DBI dbi):: Triggered before disconnecting from the datasource.
-JdbiDisconnectEnd(String datasourceName, Map<String, Object> config):: Triggered after disconnecting from the datasource.
+JdbiConnectStartEvent(String datasourceName, Map<String, Object> config):: Triggered before connecting to the datasource.
+JdbiConnectEndEvent(String datasourceName, Map<String, Object> config, DBI dbi):: Triggered after connecting to the datasource.
+JdbiDisconnectStartEvent(String datasourceName, Map<String, Object> config, DBI dbi):: Triggered before disconnecting from the datasource.
+JdbiDisconnectEndEvent(String datasourceName, Map<String, Object> config):: Triggered after disconnecting from the datasource.
 
 NOTE: DataSource events may be triggered during connection and disconnection from a datasource.
 
@@ -167,13 +167,13 @@ into said class. The previous Groovy service example can be rewritten as follows
 package com.acme
 
 import griffon.core.artifact.GriffonService
-import griffon.metadata.ArtifactProviderFor
 import griffon.transform.JdbiAware
 
 import org.skife.jdbi.v2.DBI
+import org.kordamp.jipsy.ServiceProviderFor
 
 @JdbiAware
-@ArtifactProviderFor(GriffonService)
+@ServiceProviderFor(GriffonService)
 class SampleService {
     String getPersonName(final int id) {
          withJdbi { String datasourceName, DBI dbi ->
