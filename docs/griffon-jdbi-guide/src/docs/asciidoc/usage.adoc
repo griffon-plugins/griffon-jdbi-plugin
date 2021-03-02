@@ -68,7 +68,7 @@ package com.acme;
 import griffon.plugins.jdbi.JdbiBootstrap;
 import griffon.core.injection.Module;
 import org.codehaus.griffon.runtime.core.injection.AbstractModule;
-import org.kordamp.jipsy.ServiceProviderFor;
+import org.kordamp.jipsy.annotations.ServiceProviderFor;
 
 @ServiceProviderFor(Module.class)
 public class ApplicationModule extends AbstractModule {
@@ -96,7 +96,7 @@ import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonService;
 import griffon.plugins.jdbi.JdbiHandler;
 import griffon.plugins.jdbi.JdbiCallback;
 import org.skife.jdbi.v2.DBI;
-import org.kordamp.jipsy.ServiceProviderFor;
+import org.kordamp.jipsy.annotations.ServiceProviderFor;
 
 import javax.inject.Inject;
 
@@ -128,7 +128,7 @@ import griffon.core.artifact.GriffonService
 
 import griffon.plugins.jdbi.JdbiHandler
 import org.skife.jdbi.v2.DBI
-import org.kordamp.jipsy.ServiceProviderFor
+import org.kordamp.jipsy.annotations.ServiceProviderFor
 
 import javax.inject.Inject
 
@@ -170,7 +170,7 @@ import griffon.core.artifact.GriffonService
 import griffon.transform.JdbiAware
 
 import org.skife.jdbi.v2.DBI
-import org.kordamp.jipsy.ServiceProviderFor
+import org.kordamp.jipsy.annotations.ServiceProviderFor
 
 @JdbiAware
 @ServiceProviderFor(GriffonService)
